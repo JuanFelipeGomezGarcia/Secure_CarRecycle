@@ -18,7 +18,7 @@ public class AdaptadorPersonalizado extends RecyclerView.Adapter<AdaptadorPerson
 
     public OnItemClickListener onItemClickListener;
 
-    public AdaptadorPersonalizado(ArrayList<Carros> listadoCarros) {
+    public AdaptadorPersonalizado(ArrayList<Carros> listadoCarros, int activity_vista_home) {
         this.listadoCarros = listadoCarros;
         this.onItemClickListener = null;
     }
@@ -41,7 +41,12 @@ public class AdaptadorPersonalizado extends RecyclerView.Adapter<AdaptadorPerson
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.cargarDatos(listadoCarros.get(position));
+        //holder.cargarDatos(listadoCarros.get(position));
+        Carros carro =listadoCarros.get(position);
+        holder.tv_marca.setText(carro.getMarca());
+        holder.tv_modelo.setText(carro.getModelo());
+        holder.tv_placa.setText(carro.getModelo());
+        holder.tv_color.setText(carro.getModelo());
     }
 
     @Override
@@ -58,10 +63,10 @@ public class AdaptadorPersonalizado extends RecyclerView.Adapter<AdaptadorPerson
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            /*tv_marca = itemView.findViewById(R.id.tv_marca);
-            tv_modelo = itemView.findViewById(R.id.tv_modelo);
-            tv_color = itemView.findViewById(R.id.tv_color);
-            tv_placa = itemView.findViewById(R.id.tv_placa);*/
+            tv_marca = itemView.findViewById(R.id.tv_marca_vehiculo);
+            tv_modelo = itemView.findViewById(R.id.tv_modelo_vehiculo);
+            tv_color = itemView.findViewById(R.id.tv_color_vehiculo);
+            tv_placa = itemView.findViewById(R.id.tv_placa_vehiculo);
             btn_borrar = itemView.findViewById(R.id.btn_borrar);
         }
 
@@ -88,8 +93,8 @@ public class AdaptadorPersonalizado extends RecyclerView.Adapter<AdaptadorPerson
                 });
             }
         }
-    }
 
+    }
     public interface OnItemClickListener{
         void onItemClick(Carros carros, int posicion);
         void onClickborrar(Carros carros, int posicion);

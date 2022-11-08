@@ -3,6 +3,8 @@ package co.edu.unab.secure_car;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,16 +20,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class Home extends AppCompatActivity {
-
-    FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
     DatabaseReference databaseReference;
@@ -35,30 +40,19 @@ public class Home extends AppCompatActivity {
     Button btn_agregar;
     Button btn_cerrar_sesion;
 
+    private adaptadorCarro adaptadorCarros;
+    private RecyclerView rv_home;
+    private ArrayList<Carros> listadocarros= new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         btn_agregar = findViewById(R.id.btn_nuevo_vehiculo);
         btn_cerrar_sesion = findViewById(R.id.btn_cerrar_sesion);
+        rv_home=findViewById(R.id.rv_home);
 
+        rv_home.setLayoutManager(new LinearLayoutManager(this));
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.setValue("").addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-            }
-        });
 
         btn_cerrar_sesion.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +67,11 @@ public class Home extends AppCompatActivity {
         /*actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);*/
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
+
+        CarrosfromFirebase();
+
     }
     public void onClickAgregar(View view){
         //Ir a la ventana del login
@@ -89,7 +86,7 @@ public class Home extends AppCompatActivity {
 
     private void verificacionInicioSesion(){
         if(firebaseUser != null){
-            Toast.makeText(this, "Sesion iniciada", Toast.LENGTH_SHORT).show();
+            /*Toast.makeText(this, "Sesion iniciada", Toast.LENGTH_SHORT).show();*/
         } else {
             startActivity(new Intent(Home.this, Login.class));
             finish();
@@ -97,67 +94,60 @@ public class Home extends AppCompatActivity {
     }
 
     private void CerrarSesion(){
-        firebaseAuth.signOut();
+        mAuth.signOut();
         Toast.makeText(this, "Sesion cerrada", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(Home.this, Login.class));
     }
 
-    /*private void TraerDatos(){
-        String id= Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+    private void CarrosfromFirebase(){
+        String id = mAuth.getCurrentUser().getUid();
 
-
-        databaseReference.child("Users").child(id).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        databaseReference.child("Users").child(id).child("carros").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                }
-                else {
-                    String as =  String.valueOf(task.getResult().child("intentos").getValue(Integer.class));
-                    if (task.getResult().child("name").exists()){
-                        String nnombre = task.getResult().child("name").getValue(String.class);
-                        nombre.setText(nnombre);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    for(DataSnapshot ds:snapshot.getChildren()){
+                        String marca=ds.child("marca").getValue().toString();
+                        String modelo=ds.child("modelo").getValue().toString();
+                        String placa=ds.child("placa").getValue().toString();
+                        String color=ds.child("color").getValue().toString();
+                        String nombre=ds.child("nombre").getValue().toString();
+                        String genero=ds.child("genero").getValue().toString();
+                        String edad=ds.child("edad").getValue().toString();
+                        String id=ds.child("id").getValue().toString();
+
+                        //Carros carro =(Carros) ds.child("carro").getValue();
+                        //Carros carrod= new Carros(ds.child("marca").getValue().toString(),ds.child("modelo").getValue().toString(),ds.child("placa").getValue().toString(),ds.child("color").getValue().toString(),ds.child("nombre").getValue().toString(),ds.child("edad").getValue().toString(),ds.child("genero").getValue().toString(),ds.child("id").getValue().toString());
+                        listadocarros.add(new Carros(marca,modelo,placa,color,nombre,genero,edad,id));
+
                     }
-                    else {
-                        nombre.setText("");
-                    }
-                    numero.setText(as);
+                    adaptadorCarros=new adaptadorCarro(listadocarros, R.layout.activity_vista_home);
+                    adaptadorCarros.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent =new Intent(Home.this,MostrarDatos.class);
+                            intent.putExtra("marca",listadocarros.get(rv_home.getChildAdapterPosition(view)).getMarca());
+                            intent.putExtra("modelo",listadocarros.get(rv_home.getChildAdapterPosition(view)).getModelo());;
+                            intent.putExtra("color",listadocarros.get(rv_home.getChildAdapterPosition(view)).getColor());
+                            intent.putExtra("placa",listadocarros.get(rv_home.getChildAdapterPosition(view)).getPlaca());
+                            intent.putExtra("nombre",listadocarros.get(rv_home.getChildAdapterPosition(view)).getNombre());
+                            intent.putExtra("edad",listadocarros.get(rv_home.getChildAdapterPosition(view)).getEdad());
+                            intent.putExtra("genero",listadocarros.get(rv_home.getChildAdapterPosition(view)).getGenero());
+                            intent.putExtra("id",listadocarros.get(rv_home.getChildAdapterPosition(view)).getId());
+                            startActivity(intent);
+
+                        }
+                    });
+                    rv_home.setAdapter(adaptadorCarros);
 
                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-
-
-            for(DataSnapshot questions : snapshot.child("questions").getChildren()){
-
-                String getQuestion = questions.child("question").getValue(String.class);
-                String getOption1 = questions.child("option1").getValue(String.class);
-                String getOption2 = questions.child("option2").getValue(String.class);
-                String getOption3 = questions.child("option3").getValue(String.class);
-                String getOption4 = questions.child("option4").getValue(String.class);
-                int getAnswer = Integer.parseInt(questions.child("answer").getValue(String.class));
-
-
-                ListaPreguntas listaPreguntas = new ListaPreguntas(getQuestion, getOption1, getOption2, getOption3, getOption4, getAnswer);
-
-
-                CuestionarioActivity.this.listaPreguntas.add(listaPreguntas);
-            }
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError error) {
-            Toast.makeText(CuestionarioActivity.this, "Failed to get data from Firebase", Toast.LENGTH_SHORT).show();
-        }
-
-
-
-    });*/
 }
 

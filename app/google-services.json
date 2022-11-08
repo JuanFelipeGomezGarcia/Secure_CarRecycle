@@ -1,33 +1,34 @@
 {
   "project_info": {
-    "project_number": "269045128622",
-    "project_id": "car-19272",
-    "storage_bucket": "car-19272.appspot.com"
+    "project_number": "935083012283",
+    "firebase_url": "https://carfinal-1261d-default-rtdb.firebaseio.com",
+    "project_id": "carfinal-1261d",
+    "storage_bucket": "carfinal-1261d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:269045128622:android:7010f275c7d0a4b2f13c3f",
+        "mobilesdk_app_id": "1:935083012283:android:43ca51812a12e19a3b399e",
         "android_client_info": {
           "package_name": "co.edu.unab.secure_car"
         }
       },
       "oauth_client": [
         {
-          "client_id": "269045128622-bvbc3ee7sgklf6lajv6pvnghic7r3f6a.apps.googleusercontent.com",
+          "client_id": "935083012283-303clegq5dtutge9lqlolusore6pqhot.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD739FCiRTcPnYh85ElyslyGB3Jm1-jbe4"
+          "current_key": "AIzaSyC3aXcvdJF3xMOo0arDXyYq2rm-Ia9kTMU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "269045128622-bvbc3ee7sgklf6lajv6pvnghic7r3f6a.apps.googleusercontent.com",
+              "client_id": "935083012283-303clegq5dtutge9lqlolusore6pqhot.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

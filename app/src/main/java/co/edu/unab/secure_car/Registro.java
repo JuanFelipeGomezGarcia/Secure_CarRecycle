@@ -103,19 +103,15 @@ public class Registro extends AppCompatActivity {
                                 //StyleableToast.makeText(regitrate.this,"no se pudo crear datos correctamete",R.style.exampleToast).show();
                                 Toast.makeText(Registro.this, "no se pudo crear datos ", Toast.LENGTH_SHORT).show();
                             }
-
                         }
                     });
-
                 }
                 else {
                     //  StyleableToast.makeText(regitrate.this,"no se pudo crear datos correctamente",R.style.exampleToast).show();
                     Toast.makeText(Registro.this, "no se pudo crear datos correctamente", Toast.LENGTH_SHORT).show();
                 }
             }
-
         });
-
     }
 
 }
